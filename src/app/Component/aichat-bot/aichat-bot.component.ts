@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { ServiceFlowService } from '../../Services/service-flow.service';
 
 @Component({
   selector: 'app-aichat-bot',
@@ -27,14 +28,16 @@ export class AIChatBotComponent {
   userInput: string = '';
   userName = '';
   isNameAsked = true;
-  step1=true;
-  stepsData=[{
-    step1:'Client',
-    step2:'LB',
-    step3:'EIS',
-    step4:'CBS',
-    step5:'DB'
-  }]
+  step1 = true;
+  services=['service1', 'service2','service3'];
+  stepsData = [];
+  // stepsData=[{
+  //   step1:'Client',
+  //   step2:'LB',
+  //   step3:'EIS',
+  //   step4:'CBS',
+  //   step5:'DB'
+  // }]
 
   messages: { text?: string, sender: 'user' | 'bot', renderCanvas?: boolean }[] = [];
 
@@ -42,7 +45,7 @@ export class AIChatBotComponent {
   @ViewChild('flowCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
   private ctx!: CanvasRenderingContext2D;
 
-  constructor() {
+  constructor(private serviceFlow: ServiceFlowService) {
     this.messages.push({ text: 'Please enter your name:', sender: 'bot' });
   }
 
@@ -71,28 +74,37 @@ export class AIChatBotComponent {
     const lower = input.toLowerCase();
 
     if (lower.includes('service flow')) {
-      this.step1=false;
+      this.step1 = false;
       this.botReply('Please Enter Service Name.');
       return;
     }
 
-    if (lower.includes('service 1') && this.step1==false) {
-      this.botReply('Service Flow:');
-
-      // Push a message with renderCanvas flag
-      this.messages.push({
+    if (this.step1 == false) {
+      const matchedService = this.services.find(service => lower.includes(service.toLowerCase()));
+      if (matchedService){
+        this.botReply(`Service Flow for ${matchedService}:`);
+        this.serviceFlow.serviceFlow(matchedService).subscribe((data) => {
+        this.stepsData = data;
+        this.messages.push({
         sender: 'bot',
         renderCanvas: true
       });
-
-      // Wait until canvas renders in DOM
       setTimeout(() => {
         const canvas = this.canvasRef?.nativeElement;
         if (canvas) {
           this.ctx = canvas.getContext('2d')!;
+          this.clearCanvas();
           this.drawFlow();
         }
-      }, 0);
+      }, 50);
+        console.log('Flow loaded:', data);
+      });
+      }
+      // Push a message with renderCanvas flag
+      
+
+      // Wait until canvas renders in DOM
+      
     } else {
       this.botReply('Sorry!!! Please try something else.');
     }
@@ -105,50 +117,68 @@ export class AIChatBotComponent {
   scrollToBottom() {
     try {
       this.chatBody.nativeElement.scrollTop = this.chatBody.nativeElement.scrollHeight;
-    } catch (err) {}
+    } catch (err) { }
   }
+
+  clearCanvas() {
+  const canvas = this.canvasRef?.nativeElement;
+  if (canvas && this.ctx) {
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
 
   drawFlow() {
-    const stepsObj = this.stepsData[0]; // Assuming single object
-    const steps = Object.values(stepsObj);
-    // const steps = ['Step 1', 'Step 2', 'Step 3', 'Step 4'];
-    const boxWidth = 100;
-    const boxHeight = 50;
-    const startX = 30;
-    const startY = 70;
-    const gap = 40;
+  const stepsObj = this.stepsData[0]; // Single matched object
 
-    steps.forEach((step, i) => {
-      const x = startX + i * (boxWidth + gap);
+  // Keep only values of keys like step1, step2, ..., skip serviceName
+  const steps = Object.keys(stepsObj)
+    .filter(key => key.startsWith('step') && stepsObj[key])
+    .map(key => stepsObj[key]);
 
-      this.ctx.fillStyle = '#bbdefb';
-      this.ctx.fillRect(x, startY, boxWidth, boxHeight);
+  const boxWidth = 100;
+  const boxHeight = 50;
+  const startX = 30;
+  const startY = 70;
+  const gap = 40;
 
-      this.ctx.strokeStyle = '#1976d2';
-      this.ctx.strokeRect(x, startY, boxWidth, boxHeight);
+  // Clear previous drawing if any
+  this.ctx.clearRect(0, 0, this.canvasRef.nativeElement.width, this.canvasRef.nativeElement.height);
 
-      this.ctx.fillStyle = '#000';
-      this.ctx.font = '16px Arial';
-      this.ctx.textAlign = 'center';
-      this.ctx.fillText(step, x + boxWidth / 2, startY + boxHeight / 2 + 5);
+  steps.forEach((step, i) => {
+    const x = startX + i * (boxWidth + gap);
 
-      if (i < steps.length - 1) {
-        const arrowStartX = x + boxWidth;
-        const arrowY = startY + boxHeight / 2;
+    this.ctx.fillStyle = '#bbdefb';
+    this.ctx.fillRect(x, startY, boxWidth, boxHeight);
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(arrowStartX, arrowY);
-        this.ctx.lineTo(arrowStartX + gap - 10, arrowY);
-        this.ctx.stroke();
+    this.ctx.strokeStyle = '#1976d2';
+    this.ctx.strokeRect(x, startY, boxWidth, boxHeight);
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(arrowStartX + gap - 10, arrowY - 5);
-        this.ctx.lineTo(arrowStartX + gap, arrowY);
-        this.ctx.lineTo(arrowStartX + gap - 10, arrowY + 5);
-        this.ctx.fill();
-      }
-    });
-  }
+    this.ctx.font = '16px Arial';
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+    this.ctx.fillStyle = '#000';
+    this.ctx.fillText(String(step), x + boxWidth / 2, startY + boxHeight / 2);
+
+    // Arrow to next box
+    if (i < steps.length - 1) {
+      const arrowStartX = x + boxWidth;
+      const arrowY = startY + boxHeight / 2;
+
+      this.ctx.strokeStyle = '#000';
+      this.ctx.beginPath();
+      this.ctx.moveTo(arrowStartX, arrowY);
+      this.ctx.lineTo(arrowStartX + gap - 10, arrowY);
+      this.ctx.stroke();
+
+      this.ctx.beginPath();
+      this.ctx.moveTo(arrowStartX + gap - 10, arrowY - 5);
+      this.ctx.lineTo(arrowStartX + gap, arrowY);
+      this.ctx.lineTo(arrowStartX + gap - 10, arrowY + 5);
+      this.ctx.fill();
+    }
+  });
+}
+
 
   downloadImage() {
     const canvas = this.canvasRef.nativeElement;

@@ -7,9 +7,10 @@ import {Observable} from 'rxjs';
 })
 export class ServiceFlowService {
   constructor(private http:HttpClient){}
-apiUrl='https://localhost:5000/';
 
-serviceFlow(apiUrl:string,serviceName:string){
-  this.http.get(apiUrl)
+serviceFlow(serviceName: string): Observable<any> {
+  return this.http.get<any[]>(`http://localhost:5000/serviceFlow?serviceName=${serviceName}`);
 }
+
+
 }

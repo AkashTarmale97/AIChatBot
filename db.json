@@ -1,29 +1,28 @@
 {
-    "service1": [
-        {
-            "step1": "Client",
-            "step2":"LB",
-            "step3":"EIS",
-            "step4":"CBS",
-            "step5":"DB"
-        }
-    ],
-    "service2": [
-        {
-            "step1": "Client",
-            "step2":"LB",
-            "step3":"EIS",
-            "step4":"CBS",
-            "step5":""
-        }
-    ],
-    "service3": [
-        {
-            "step1": "Client",
-            "step2":"LB",
-            "step3":"EIS",
-            "step4":"",
-            "step5":"DB"
-        }
-    ]
+  "serviceFlow": [
+    {
+      "serviceName": "service1",
+      "step1": "Client",
+      "step2": "LB",
+      "step3": "EIS",
+      "step4": "CBS",
+      "step5": "DB"
+    },
+    {
+      "serviceName": "service2",
+      "step1": "Client",
+      "step2": "LB",
+      "step3": "EIS",
+      "step4": "CBS",
+      "step5": ""
+    },
+    {
+      "serviceName": "service3",
+      "step1": "Client",
+      "step2": "LB",
+      "step3": "EIS",
+      "step4": "",
+      "step5": "DB"
+    }
+  ]
 }
