@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -29,7 +29,7 @@ export class AIChatBotComponent {
   userName = '';
   isNameAsked = true;
   step1 = true;
-  services=['service1', 'service2','service3'];
+  services = ['service1', 'service2', 'service3'];
   stepsData = [];
   // stepsData=[{
   //   step1:'Client',
@@ -42,7 +42,9 @@ export class AIChatBotComponent {
   messages: { text?: string, sender: 'user' | 'bot', renderCanvas?: boolean }[] = [];
 
   @ViewChild('chatBody') chatBody!: ElementRef;
-  @ViewChild('flowCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
+  // @ViewChild('flowCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChildren('canvasElem') canvasElems!: QueryList<ElementRef<HTMLCanvasElement>>;
+
   private ctx!: CanvasRenderingContext2D;
 
   constructor(private serviceFlow: ServiceFlowService) {
@@ -81,30 +83,34 @@ export class AIChatBotComponent {
 
     if (this.step1 == false) {
       const matchedService = this.services.find(service => lower.includes(service.toLowerCase()));
-      if (matchedService){
+      if (matchedService) {
         this.botReply(`Service Flow for ${matchedService}:`);
         this.serviceFlow.serviceFlow(matchedService).subscribe((data) => {
-        this.stepsData = data;
-        this.messages.push({
-        sender: 'bot',
-        renderCanvas: true
-      });
-      setTimeout(() => {
-        const canvas = this.canvasRef?.nativeElement;
-        if (canvas) {
-          this.ctx = canvas.getContext('2d')!;
-          this.clearCanvas();
-          this.drawFlow();
-        }
-      }, 50);
-        console.log('Flow loaded:', data);
-      });
+          this.stepsData = data;
+          this.messages.push({
+            sender: 'bot',
+            renderCanvas: true
+          });
+          setTimeout(() => {
+            const canvas = this.canvasElems?.last?.nativeElement;
+            if (canvas) {
+              this.ctx = canvas.getContext('2d')!;
+              this.clearCanvas(canvas);
+              this.drawFlow(canvas);
+            }
+          }, 0);
+
+          console.log('Flow loaded:', data);
+        });
+      }
+      else{
+        this.botReply('Sorry!! No Service Found....');
       }
       // Push a message with renderCanvas flag
-      
+
 
       // Wait until canvas renders in DOM
-      
+
     } else {
       this.botReply('Sorry!!! Please try something else.');
     }
@@ -120,72 +126,72 @@ export class AIChatBotComponent {
     } catch (err) { }
   }
 
-  clearCanvas() {
-  const canvas = this.canvasRef?.nativeElement;
-  if (canvas && this.ctx) {
-    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-}
-
-  drawFlow() {
-  const stepsObj = this.stepsData[0]; // Single matched object
-
-  // Keep only values of keys like step1, step2, ..., skip serviceName
-  const steps = Object.keys(stepsObj)
-    .filter(key => key.startsWith('step') && stepsObj[key])
-    .map(key => stepsObj[key]);
-
-  const boxWidth = 100;
-  const boxHeight = 50;
-  const startX = 30;
-  const startY = 70;
-  const gap = 40;
-
-  // Clear previous drawing if any
-  this.ctx.clearRect(0, 0, this.canvasRef.nativeElement.width, this.canvasRef.nativeElement.height);
-
-  steps.forEach((step, i) => {
-    const x = startX + i * (boxWidth + gap);
-
-    this.ctx.fillStyle = '#bbdefb';
-    this.ctx.fillRect(x, startY, boxWidth, boxHeight);
-
-    this.ctx.strokeStyle = '#1976d2';
-    this.ctx.strokeRect(x, startY, boxWidth, boxHeight);
-
-    this.ctx.font = '16px Arial';
-    this.ctx.textAlign = 'center';
-    this.ctx.textBaseline = 'middle';
-    this.ctx.fillStyle = '#000';
-    this.ctx.fillText(String(step), x + boxWidth / 2, startY + boxHeight / 2);
-
-    // Arrow to next box
-    if (i < steps.length - 1) {
-      const arrowStartX = x + boxWidth;
-      const arrowY = startY + boxHeight / 2;
-
-      this.ctx.strokeStyle = '#000';
-      this.ctx.beginPath();
-      this.ctx.moveTo(arrowStartX, arrowY);
-      this.ctx.lineTo(arrowStartX + gap - 10, arrowY);
-      this.ctx.stroke();
-
-      this.ctx.beginPath();
-      this.ctx.moveTo(arrowStartX + gap - 10, arrowY - 5);
-      this.ctx.lineTo(arrowStartX + gap, arrowY);
-      this.ctx.lineTo(arrowStartX + gap - 10, arrowY + 5);
-      this.ctx.fill();
+  clearCanvas(canvas: HTMLCanvasElement) {
+    if (this.ctx && canvas) {
+      this.ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
-  });
-}
+  }
+
+
+  drawFlow(canvas: HTMLCanvasElement) {
+    const stepsObj = this.stepsData[0];
+    const steps = Object.keys(stepsObj)
+      .filter(key => key.startsWith('step') && stepsObj[key])
+      .map(key => stepsObj[key]);
+
+    const boxWidth = 100;
+    const boxHeight = 50;
+    const startX = 30;
+    const startY = 70;
+    const gap = 40;
+
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    steps.forEach((step, i) => {
+      const x = startX + i * (boxWidth + gap);
+
+      this.ctx.fillStyle = '#bbdefb';
+      this.ctx.fillRect(x, startY, boxWidth, boxHeight);
+
+      this.ctx.strokeStyle = '#1976d2';
+      this.ctx.strokeRect(x, startY, boxWidth, boxHeight);
+
+      this.ctx.font = '16px Arial';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillStyle = '#000';
+      this.ctx.fillText(String(step), x + boxWidth / 2, startY + boxHeight / 2);
+
+      if (i < steps.length - 1) {
+        const arrowStartX = x + boxWidth;
+        const arrowY = startY + boxHeight / 2;
+
+        this.ctx.strokeStyle = '#000';
+        this.ctx.beginPath();
+        this.ctx.moveTo(arrowStartX, arrowY);
+        this.ctx.lineTo(arrowStartX + gap - 10, arrowY);
+        this.ctx.stroke();
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(arrowStartX + gap - 10, arrowY - 5);
+        this.ctx.lineTo(arrowStartX + gap, arrowY);
+        this.ctx.lineTo(arrowStartX + gap - 10, arrowY + 5);
+        this.ctx.fill();
+      }
+    });
+  }
+
 
 
   downloadImage() {
-    const canvas = this.canvasRef.nativeElement;
+    const canvas = this.canvasElems?.last?.nativeElement;
+    if (!canvas) return;
+
     const imageUrl = canvas.toDataURL('image/png');
     const link = document.createElement('a');
     link.href = imageUrl;
     link.download = 'flowchart.png';
     link.click();
   }
+
 }
