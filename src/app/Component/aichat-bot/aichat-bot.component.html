@@ -1,0 +1,26 @@
+<mat-card class="chat-window">
+  <div class="chat-header">AI Chatbot</div>
+
+  <div class="chat-body" #chatBody>
+    <div *ngFor="let msg of messages" [ngClass]="{ 'user-msg': msg.sender === 'user', 'bot-msg': msg.sender === 'bot' }">
+      <mat-card class="chat-bubble" *ngIf="!msg.renderCanvas">{{ msg.text }}</mat-card>
+
+      <!-- 🎯 Canvas appears inside chat here -->
+      <div *ngIf="msg.renderCanvas" class="chat-bubble">
+        <canvas #flowCanvas width="700" height="200" style="border: 1px solid #aaa;"></canvas>
+        <br />
+        <button (click)="downloadImage()">Download Flowchart</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-footer">
+    <mat-form-field appearance="outline" class="input-box">
+      <input class="user-input" matInput [(ngModel)]="userInput" placeholder="Type your message....."
+        (keyup.enter)="handleUserInput()" />
+    </mat-form-field>
+    <button mat-icon-button color="primary" (click)="handleUserInput()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</mat-card>
