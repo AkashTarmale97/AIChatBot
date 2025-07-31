@@ -97,6 +97,7 @@ export class AIChatBotComponent {
               this.ctx = canvas.getContext('2d')!;
               this.clearCanvas(canvas);
               this.drawFlow(canvas);
+              
             }
           }, 0);
 
