@@ -67,3 +67,6 @@
 .bot-msg .chat-bubble {
   background-color: #E0E0E0;
 }
+.responsive-canvas{
+  overflow-x: auto;
+}

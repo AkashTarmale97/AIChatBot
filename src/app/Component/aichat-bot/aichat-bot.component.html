@@ -6,8 +6,12 @@
       <mat-card class="chat-bubble" *ngIf="!msg.renderCanvas">{{ msg.text }}</mat-card>
 
       <!-- 🎯 Canvas appears inside chat here -->
-      <div *ngIf="msg.renderCanvas" class="chat-bubble">
-        <canvas #canvasElem width="900" height="400" style="border: 1px solid #aaa;"></canvas>
+      <div *ngIf="msg.renderCanvas" class="chat-bubble canvas-wrapper">
+        <div class="canvas-container">
+          <canvas #canvasElem width="1000" height="300" style="border: 1px solid #aaa;" class="responsive-canvas" ></canvas>
+        </div>
+        
+        <!-- width="800" height="300" style="border: 1px solid #aaa;" -->
         <br />
         <button (click)="downloadImage()">Download Flowchart</button>
       </div>

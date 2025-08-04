@@ -182,8 +182,8 @@ export class AIChatBotComponent {
       // Draw heading box
       this.drawBox(currentX, baseY, boxWidth, boxHeight, '#ffe082', '#f57f17', heading);
 
-      // Connect previous step to heading
-      if (stepIndex > 0 && typeof steps[stepIndex - 1] === 'string') {
+      // Always connect previous step to heading
+      if (stepIndex > 0) {
         const fromX = currentX - gapX + boxWidth;
         const fromY = baseY + boxHeight / 2;
         this.drawArrow(fromX, fromY, currentX, fromY);
@@ -215,7 +215,9 @@ export class AIChatBotComponent {
       currentX = subX + boxWidth + 60;
     }
   });
+  this.step1=true;
 }
+
 
 drawBox(x: number, y: number, width: number, height: number, fill: string, stroke: string, text: string) {
   this.ctx.fillStyle = fill;
