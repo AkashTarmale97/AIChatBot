@@ -1,3 +1,6 @@
+html, body {
+  overflow: visible;
+}
 .container {
   max-width: 90%;
   margin: 30px auto;
@@ -60,6 +63,9 @@ button:hover {
   padding: 10px;
   background-color: beige;
   border-radius: 1rem;
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
 }
 
 .flow-step {
