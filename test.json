@@ -1,28 +1,68 @@
+
 {
-  "serviceFlow": [
-    {
-      "serviceName": "service1",
-      "step1": "Client",
-      "step2": "LB",
-      "step3": "EIS",
-      "step4": "CBS",
-      "step5": "DB"
-    },
-    {
-      "serviceName": "service2",
-      "step1": "Client",
-      "step2": "LB",
-      "step3": "EIS",
-      "step4": "CBS",
-      "step5": ""
-    },
-    {
-      "serviceName": "service3",
-      "step1": "Client",
-      "step2": "LB",
-      "step3": "EIS",
-      "step4": "",
-      "step5": "DB"
-    }
-  ]
+    "service1":[
+        {
+            "step1": "Client",
+            "step2": {
+                "heading": "LB",
+                "subSteps": {
+                    "subStep1": "External LB1",
+                    "subStep2": "Internal LB2"
+                }
+            },
+            "step3": "EIS",
+            "step4": "CBS",
+            "step5": "DB"
+        }
+    ],
+    "service2":[
+        {
+            "step1": "Client",
+            "step2": "SBI",
+            "step3": {
+                "heading": "LB",
+                "subSteps": {
+                    "subStep1": "External LB1",
+                    "subStep2": "Internal LB2",
+                    "subStep3": "Internal LB3"
+                }
+            },
+            "step4": "CBS",
+            "step5": "DB"
+        }
+    ],
+    "service3":[
+        {
+            "step1": "Client",
+            "step2": "LB",
+            "step3": "EIS",
+            "step4": "",
+            "step5": "DB"
+        }
+    ],
+    "service4":[
+        {
+            "step1": "Client",
+            "step2": {
+                "heading": "Load Balancer",
+                "subSteps": {
+                    "subStep1": "External Load Balancer 1",
+                    "subStep2": "Internal Load Balancer 2",
+                    "subStep3": "Internal Load Balancer 3"
+                }
+            },
+            "step3": "EIS",
+            "step4": "",
+            "step5": {
+                "heading": "Load Balancer",
+                "subSteps": {
+                    "subStep1": "External Load Balancer 1",
+                    "subStep2": "Internal Load Balancer 2",
+                    "subStep3": "Internal Load Balancer 3"
+                }
+            },
+            "step6": "DataBase"
+        }
+    ]
+
 }

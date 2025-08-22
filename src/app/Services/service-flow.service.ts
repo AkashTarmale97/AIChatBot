@@ -9,8 +9,8 @@ export class ServiceFlowService {
   constructor(private http:HttpClient){}
 
 serviceFlow(serviceName: string): Observable<any> {
-  return this.http.get<any[]>(`http://localhost:3000/serviceFlow?serviceName=${serviceName}`);
+  const obj= this.http.get<any[]>(`http://localhost:3000/serviceFlow?serviceName=${serviceName}`);
+  console.log(obj);
+  return obj;
 }
-
-
 }

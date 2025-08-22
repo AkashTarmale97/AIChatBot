@@ -8,6 +8,18 @@
   border-radius: 20px;
   box-shadow: 0 0 10px #ccc;
 }
+.canvas-wrapper {
+  width: 30%;
+  overflow-x: scroll;
+  /* overflow-y: scroll; */
+}
+
+.responsive-canvas {
+  width: auto;
+  /* max-width: 100%; */
+  height: auto;
+  display: block;
+}
 
 .chat-header {
   background: #663636;
@@ -66,7 +78,4 @@
 
 .bot-msg .chat-bubble {
   background-color: #E0E0E0;
-}
-.responsive-canvas{
-  overflow-x: auto;
 }

@@ -23,11 +23,11 @@
                 "subSteps": {
                     "subStep1": "External LB1",
                     "subStep2": "Internal LB2",
-                    "subStep3": "Internal LB2"
+                    "subStep3": "Internal LB3"
                 }
             },
             "step4": "CBS",
-            "step5": ""
+            "step5": "DB"
         },
         {
             "serviceName": "service3",

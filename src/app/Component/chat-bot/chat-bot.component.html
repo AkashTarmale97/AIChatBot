@@ -1,0 +1,25 @@
+<div class="container">
+  <h2>Service Flow Diagram</h2>
+
+  <input type="text" [(ngModel)]="serviceName" placeholder="Enter Service Name" />
+  <button (click)="fetchFlow()">Show Flow</button>
+  <button (click)="generateImage()" [disabled]="flowSteps.length === 0">Download as Image</button>
+
+  <div #flowContainer class="flow-diagram" *ngIf="flowSteps.length > 0">
+    <ng-container *ngFor="let step of flowSteps; let last = last">
+      <!-- Simple step -->
+      <div class="flow-step" *ngIf="!isObject(step)">{{ step }}</div>
+
+      <!-- Step with sub-steps -->
+      <div class="flow-step" *ngIf="isObject(step)">
+        <div class="main-step">{{ step.heading }}</div>
+        <div class="sub-steps" *ngIf="step.subSteps">
+          <div class="sub-step" *ngFor="let sub of step.subSteps | keyvalue">{{ sub.value }}</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow" *ngIf="!last">→</div>
+    </ng-container>
+  </div>
+</div>

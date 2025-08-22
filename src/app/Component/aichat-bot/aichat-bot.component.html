@@ -2,15 +2,16 @@
   <div class="chat-header">AI Chatbot</div>
 
   <div class="chat-body" #chatBody>
-    <div *ngFor="let msg of messages" [ngClass]="{ 'user-msg': msg.sender === 'user', 'bot-msg': msg.sender === 'bot' }">
+    <div *ngFor="let msg of messages"
+      [ngClass]="{ 'user-msg': msg.sender === 'user', 'bot-msg': msg.sender === 'bot' }">
       <mat-card class="chat-bubble" *ngIf="!msg.renderCanvas">{{ msg.text }}</mat-card>
-
       <!-- 🎯 Canvas appears inside chat here -->
       <div *ngIf="msg.renderCanvas" class="chat-bubble canvas-wrapper">
         <div class="canvas-container">
-          <canvas #canvasElem width="1000" height="300" style="border: 1px solid #aaa;" class="responsive-canvas" ></canvas>
+          <canvas #canvasElem class="responsive-canvas"></canvas>
+
         </div>
-        
+
         <!-- width="800" height="300" style="border: 1px solid #aaa;" -->
         <br />
         <button (click)="downloadImage()">Download Flowchart</button>

@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ServiceFlowService } from '../../Services/service-flow.service';
+import { ServiceFlowComponent } from '../service-flow/service-flow.component';
 
 interface StepObject {
   heading: string;
@@ -102,14 +103,14 @@ export class AIChatBotComponent {
             if (canvas) {
               this.ctx = canvas.getContext('2d')!;
               this.clearCanvas(canvas);
-              this.drawFlow(canvas);  
+              this.drawFlow(canvas);
             }
           }, 0);
 
           console.log('Flow loaded:', data);
         });
       }
-      else{
+      else {
         this.botReply('Sorry!! No Service Found....');
       }
       // Push a message with renderCanvas flag
@@ -138,7 +139,7 @@ export class AIChatBotComponent {
     }
   }
 
-  drawFlow(canvas: HTMLCanvasElement) {
+drawFlow(canvas: HTMLCanvasElement) {
   const stepsObj = this.stepsData[0];
   const steps = Object.keys(stepsObj)
     .filter(key => key.startsWith('step') && stepsObj[key])
@@ -146,27 +147,43 @@ export class AIChatBotComponent {
 
   const boxWidth = 100;
   const boxHeight = 50;
-  const startX = 30;
-  const startY = 150;
   const gapX = 140;
   const subGapY = 70;
 
-  this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Calculate canvas size
+  let estWidth = steps.length * (boxWidth + gapX) + 100;
+  let maxSub = Math.max(
+    0,
+    ...steps.map(s => typeof s === 'object' && 'subSteps' in s ? Object.keys((s as any).subSteps!).length : 0)
+  );
+  let estHeight = 300 + (maxSub * subGapY);
+
+  // Setup canvas resolution for device pixel ratio
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.style.width = `${estWidth}px`;
+  canvas.style.height = `${estHeight}px`;
+
+  canvas.width = estWidth * dpr;
+  canvas.height = estHeight * dpr;
+
+  this.ctx = canvas.getContext('2d')!;
+  this.ctx.scale(dpr, dpr);
+
+  this.ctx.clearRect(0, 0, estWidth, estHeight);
   this.ctx.font = '14px Arial';
   this.ctx.textAlign = 'center';
   this.ctx.textBaseline = 'middle';
 
-  let currentX = startX;
-  const baseY = startY;
+  let currentX = 30;
+  const baseY = estHeight / 2;
 
   steps.forEach((step, stepIndex) => {
     const nextStep = steps[stepIndex + 1];
 
     if (typeof step === 'string') {
-      // Draw main step
       this.drawBox(currentX, baseY, boxWidth, boxHeight, '#bbdefb', '#1976d2', step);
 
-      // Arrow to next step
       if (nextStep) {
         const toX = currentX + boxWidth + gapX - 20;
         const toY = baseY + boxHeight / 2;
@@ -179,31 +196,23 @@ export class AIChatBotComponent {
       const heading = step.heading;
       const subSteps = Object.values(step.subSteps);
 
-      // Draw heading box
       this.drawBox(currentX, baseY, boxWidth, boxHeight, '#ffe082', '#f57f17', heading);
 
-      // Always connect previous step to heading
       if (stepIndex > 0) {
         const fromX = currentX - gapX + boxWidth;
         const fromY = baseY + boxHeight / 2;
         this.drawArrow(fromX, fromY, currentX, fromY);
       }
 
-      // Coordinates for substeps
       const subX = currentX + boxWidth + 40;
       const totalHeight = (subSteps.length - 1) * subGapY;
       const startSubY = baseY - totalHeight / 2;
 
       subSteps.forEach((sub, idx) => {
         const subY = startSubY + idx * subGapY;
-
-        // Draw substep box
         this.drawBox(subX, subY, boxWidth, boxHeight, '#c8e6c9', '#388e3c', sub);
-
-        // Arrow from heading to substep
         this.drawArrow(currentX + boxWidth, baseY + boxHeight / 2, subX, subY + boxHeight / 2);
 
-        // Arrow from substep to next main step
         if (nextStep && typeof nextStep === 'string') {
           const nextX = subX + boxWidth + 60;
           const nextY = baseY;
@@ -211,39 +220,38 @@ export class AIChatBotComponent {
         }
       });
 
-      // Move currentX past heading + substeps area
       currentX = subX + boxWidth + 60;
     }
   });
-  this.step1=true;
+
+  this.step1 = true;
 }
 
+  drawBox(x: number, y: number, width: number, height: number, fill: string, stroke: string, text: string) {
+    this.ctx.fillStyle = fill;
+    this.ctx.fillRect(x, y, width, height);
+    this.ctx.strokeStyle = stroke;
+    this.ctx.strokeRect(x, y, width, height);
+    this.ctx.fillStyle = '#000';
+    this.ctx.fillText(text, x + width / 2, y + height / 2);
+  }
 
-drawBox(x: number, y: number, width: number, height: number, fill: string, stroke: string, text: string) {
-  this.ctx.fillStyle = fill;
-  this.ctx.fillRect(x, y, width, height);
-  this.ctx.strokeStyle = stroke;
-  this.ctx.strokeRect(x, y, width, height);
-  this.ctx.fillStyle = '#000';
-  this.ctx.fillText(text, x + width / 2, y + height / 2);
-}
+  drawArrow(fromX: number, fromY: number, toX: number, toY: number) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(fromX, fromY);
+    this.ctx.lineTo(toX, toY);
+    this.ctx.stroke();
 
-drawArrow(fromX: number, fromY: number, toX: number, toY: number) {
-  this.ctx.beginPath();
-  this.ctx.moveTo(fromX, fromY);
-  this.ctx.lineTo(toX, toY);
-  this.ctx.stroke();
+    const headlen = 6;
+    const angle = Math.atan2(toY - fromY, toX - fromX);
 
-  const headlen = 6;
-  const angle = Math.atan2(toY - fromY, toX - fromX);
-
-  this.ctx.beginPath();
-  this.ctx.moveTo(toX, toY);
-  this.ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
-  this.ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
-  this.ctx.lineTo(toX, toY);
-  this.ctx.fill();
-}
+    this.ctx.beginPath();
+    this.ctx.moveTo(toX, toY);
+    this.ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+    this.ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+    this.ctx.lineTo(toX, toY);
+    this.ctx.fill();
+  }
 
 
 

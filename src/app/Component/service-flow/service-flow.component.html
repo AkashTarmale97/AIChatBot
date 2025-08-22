@@ -1,0 +1,19 @@
+<div class="container">
+  <h2>Service Flow Journey</h2>
+
+  <input
+    type="text"
+    [(ngModel)]="serviceName"
+    placeholder="Enter Service Name (e.g., service1)"
+  />
+  <button (click)="fetchFlow()">Show Flow</button>
+
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <div *ngIf="mermaidCode">
+    <h3>Journey for {{ serviceName }}</h3>
+    <div class="mermaid" #mermaidDiv>
+      {{ mermaidCode }}
+    </div>
+  </div>
+</div>

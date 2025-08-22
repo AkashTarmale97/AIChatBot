@@ -1,0 +1,129 @@
+.container {
+  max-width: 90%;
+  margin: 30px auto;
+  padding: 25px;
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f9fafc;
+  border-radius: 12px;
+}
+
+h2 {
+  color: #1a2f5b;
+  margin-bottom: 25px;
+  font-size: 30px;
+  letter-spacing: 1.2px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+input {
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+  width: 260px;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 10px rgba(74,144,226,0.4);
+}
+
+button {
+  margin-left: 12px;
+  padding: 12px 24px;
+  border: none;
+  background: #4a90e2;
+  color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+button:hover {
+  background: #357ab7;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+}
+
+.flow-diagram {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 40px;
+  gap: 20px;
+  padding: 10px;
+  background-color: beige;
+  border-radius: 1rem;
+}
+
+.flow-step {
+  background: linear-gradient(145deg, #ffffff, #e6f0ff);
+  border: 2px solid #4a90e2;
+  border-radius: 18px;
+  padding: 20px 28px;
+  min-width: 100px;
+  text-align: center;
+  font-weight: 600;
+  color: #1a2f5b;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: fit-content;
+  margin: auto;
+}
+
+.flow-step:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
+.main-step {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #0d1f3a;
+}
+
+.sub-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.sub-step {
+  background: #d9ebff;
+  border-left: 5px solid #4a90e2;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1a2f5b;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+  transition: background 0.3s ease;
+}
+
+.sub-step:hover {
+  background: #c2e0ff;
+}
+
+.arrow {
+  align-self: center;
+  margin: 0 16px;
+  font-size: xx-large;
+  font-weight: bold;
+  color: #4a90e2;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.arrow:hover {
+  transform: scale(1.1);
+  color: #357ab7;
+}
