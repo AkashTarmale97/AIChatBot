@@ -61,7 +61,9 @@
                     "subStep3": "Internal Load Balancer 3"
                 }
             },
-            "step6": "DataBase"
+            "step6": "DataBase",
+            "step7": "Library",
+            "step8": "Data Power Gateway"
         }
     ]
 
